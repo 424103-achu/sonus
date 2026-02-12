@@ -1,0 +1,50 @@
+@import "tailwindcss";
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+:root{
+  height: 100%;
+  width: 100%;
+}
+body {
+  margin: 0px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 320px;
+  min-height: 100vh;
+}
+.form{
+     height: 500px;
+    width: 350px;
+    background-color: rgba(0, 0, 0, 0.504);
+    display: flex;
+    border-radius: 30px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+}
+.signup{
+    margin-top: 50px;
+}
+.input-field{
+    height: 40px;
+    border-radius: 10px;
+    width: 250px;
+    text-align: center;
+    outline: none;
+    background-color: rgb(156, 156, 156);
+    border: 0;
+}
