@@ -1,7 +1,10 @@
-import React, { useState } from "react";
-import Button from "../components/button.jsx";
-import { Link } from "react-router-dom";
+import  { useState } from "react";
+import Button from "../../components/button.jsx";
+import Navbar from "./components/Navbar.jsx";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
+import Footer from "./components/Footer.jsx";
+import "../../index.css"
+import { Link } from "react-router-dom";
 function Login() {
   const [usnm, setUsername] = useState("");
   const [pswd, setPassword] = useState("");
@@ -28,42 +31,18 @@ function Login() {
     setUsername("");
     setPassword("");
   };
-  return (
-    <div className="w-screen h-screen bg-[#0b0b0d] text-white relative overflow-hidden">
-      <div
-        className="absolute top-0 left-0 w-full flex justify-between 
-               items-center px-[4%] py-[2%] z-20"
-      >
-        <div className="text-4xl  font-semibold tracking-wide text-white-400/80" style={{ fontFamily: "Sour Gummy" }}>
-          Sonus
-        </div>
-        <div className="flex gap-8 text-gray-400">
-          <nav className="ml-auto flex gap-8 text-sm">
-            <Link to="/" className="text-zinc-400 hover:text-white transition">
-              Home
-            </Link>
-            <Link
-              to="/signup"
-              className="text-zinc-400 hover:text-white transition"
-            >
-              Sign up
-            </Link>
-          </nav>
-        </div>
-      </div>
+  return (  
+    <div className="w-full h-full bg-[#0b0b0d] text-white">
+      <Navbar
+        links={[
+          { name: "Home", path: "/" },
+          { name: "Sign Up", path: "/signup" },
+        ]}
+      />
       <div className="absolute -top-[15%] -left-[15%] w-[50%] h-[50%] bg-red-600/20 blur-[20vw]" />
       <div className="absolute bottom-0 right-0 w-[40%] h-[40%] bg-red-700/10 blur-[18vw]" />
       <div className="relative z-10 w-full h-full flex justify-center items-center">
-        <div className="w-full max-w-350 h-full flex">
-          <div className="hidden lg:flex w-1/2 flex-col justify-center px-[8%]">
-            <h1 className="font-semibold mb-4 text-[clamp(2.5rem,3vw,3.5rem)]">
-              Welcome
-            </h1>
-            <p className="text-gray-400 max-w-md text-[clamp(1rem,1.1vw,1.2rem)]">
-              Your private space for photos, videos, and life moments — exactly
-              where you left them.
-            </p>
-          </div>
+        <div className="w-full max-w-350 h-full flex justify-center items-center">
           <div className="w-full lg:w-1/2 flex justify-center items-center px-6">
             <form
               onSubmit={LoginAction}
@@ -71,7 +50,7 @@ function Login() {
                          border border-white/5 shadow-2xl"
             >
               <h1 className=" text-2xl text-center font-semibold mb-10 ">
-                Log into your account 
+                Log into your account
               </h1>
               <label className="text-gray-400 text-sm">Username or Email</label>
               <input
@@ -91,7 +70,7 @@ function Login() {
                 <input
                   type={showPassword ? "text" : "password"}
                   value={pswd}
-                  onChange={(e) => {
+                  onChange={(e) => {  
                     setPassword(e.target.value);
                     setError("");
                   }}
@@ -113,7 +92,9 @@ function Login() {
                 </button>
               </div>
               <div className="flex justify-center">
-                <Button type="submit">Sign in</Button>
+                {/* just to check profile page is working or not change the below link to button  we need dynamic url later */}
+
+               <Link to="/profile" > Profile</Link>
               </div>
               {error && (
                 <div className="mt-4 text-red-500 text-sm text-center">
@@ -129,6 +110,7 @@ function Login() {
           </div>
         </div>
       </div>
+      <Footer/>
     </div>
   );
 }
