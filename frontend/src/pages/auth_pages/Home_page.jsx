@@ -20,9 +20,9 @@ function Home() {
       <div className="absolute bottom-0 right-0 w-[40%] h-[40%] bg-red-700/10 blur-[18vw] pointer-events-none" />
 
       {/* ================= HERO ================= */}
-      <div className="relative z-10 w-full min-h-screen flex flex-col min-[820px]:flex-row">
+    <div className="  w-full relative z-10 flex flex-col min-[820px]:flex-row justify-center items-center min-h-screen pt-28 pb-10">
         {/* LEFT SIDE */}
-        <div className="w-full min-[820px]:w-1/2 flex flex-col justify-center px-[8%] py-24 min-[820px]:py-0">
+        <div className="w-full min-[820px]:w-1/2 flex flex-col justify-center px-[8%]  min-[820px]:py-0">
           <h1
             className="
               font-semibold mb-6 leading-tight
@@ -128,7 +128,7 @@ function Home() {
             </Link>
           </div>
         </div>
-      </div>
+    </div>
       <Footer />
     </div>
   );
