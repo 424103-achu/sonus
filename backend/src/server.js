@@ -1,8 +1,7 @@
 import dotenv from "dotenv";
 import app from "./app.js";
-import db from "./utils/db.js"; 
-import express from 'express'
-
+import express from "express";
+import pool from "./utils/db.js";
 dotenv.config();
 app.use(express.json());
 const PORT = process.env.PORT || 5000;
@@ -10,7 +9,7 @@ app.get("/test", (req, res) => {
   res.json({ message: "Backend working" });
 });
 app.get("/signup", (req, res) => {
-  db.query("SELECT 3+5 AS result", (err, results) => {
+  pool.query("SELECT 3+5 AS result1,2+4 AS result", (err, results) => {
     if (err) {
       return res.status(500).json(err);
     }

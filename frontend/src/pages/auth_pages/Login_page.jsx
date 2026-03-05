@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link,useNavigate } from "react-router-dom";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -11,7 +11,7 @@ function Login() {
   const [pswd, setPassword] = useState("");
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-
+  const navigate=useNavigate();
   const emailRegex =
     /^[a-zA-Z0-9._%+-]+@((student\.nitandhra\.ac\.in)|([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,})$/;
   const userRegex = /^[a-zA-Z0-9._]{3,20}$/;
@@ -33,6 +33,8 @@ function Login() {
 
     setError("");
     console.log("Login OK:", { usnm, pswd });
+    navigate("/profile");
+    
   };
 
   return (
@@ -113,7 +115,7 @@ function Login() {
             )}
 
             <p className="text-xs text-zinc-400 text-center mt-6">
-              Don’t have an account?{" "}
+              Don't have an account?{" "}
               <Link to="/signup" className="text-white hover:underline">
                 Sign up
               </Link>

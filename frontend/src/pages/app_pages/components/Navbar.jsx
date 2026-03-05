@@ -1,9 +1,8 @@
-import { Link } from "react-router-dom";
 import { HomeIcon } from "lucide-react";
 import { User2, Search } from "lucide-react";
 import { useState } from "react";
 import IconLink from "./iconlink";
-function Navbar({ links = [] }) {
+function Navbar() {
   const [expanded, setExpanded] = useState(false);
   const [username, setusername] = useState("");
   const searchusername=(e)=>{
@@ -22,7 +21,7 @@ function Navbar({ links = [] }) {
 
       {/* Navigation Links */}
       <nav className="flex gap-8 text-sm text-zinc-400">
-        <IconLink to="/" icon={HomeIcon} label="Home" />
+        <IconLink to="/home" icon={HomeIcon} label="Home" />
             <div
       onMouseEnter={() => setExpanded(true)}
       onMouseLeave={() => setExpanded(false)}
@@ -60,7 +59,7 @@ function Navbar({ links = [] }) {
       />
     </div>
 
-        <IconLink to="/" icon={User2} label="Profile" />
+        <IconLink to="/profile" icon={User2} label="Profile" />
       </nav>
     </div>
   );
