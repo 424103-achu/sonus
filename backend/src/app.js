@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import storyRoutes from './routes/storyRoutes.js'
 const app = express();
 
 app.use(cors({
@@ -18,4 +19,5 @@ app.get("/", (req, res) => {
 app.get("/test", (req, res) => {
   res.send('<p>successfully initialised test  backend</p>');
 });
+app.use("/api/stories",storyRoutes);
 export default app;
