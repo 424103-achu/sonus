@@ -26,7 +26,7 @@ function Signup() {
     axios
       .get("http://localhost:5000/signup")
       .then((res) => {
-        setresult(res.data[0].result1);
+        setresult(res.data.rows[0].result1);
       })
       .catch((err) => console.error(err));
   }, []);

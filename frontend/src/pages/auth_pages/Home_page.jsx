@@ -4,7 +4,7 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import "../../index.css";
 
-function Home() {
+function Home_Auth() {
   return (
     <div className="w-full min-h-full bg-[#0b0b0d] text-white relative overflow-x-hidden">
       {/* ================= NAVBAR ================= */}
@@ -134,4 +134,4 @@ function Home() {
   );
 }
 
-export default Home;
+export default Home_Auth;
