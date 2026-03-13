@@ -21,6 +21,7 @@ function AppRoutes() {
       {/* Main app */}
       <Route path="/home" element={<Home />} />
       <Route path="/profile" element={<Profile />} />
+      <Route path="/profile/:id" element={<Profile />} />
 
     {/* dynamic story route */}
       <Route path="/story/:userId/:storyId" element={<StoryPage />} />

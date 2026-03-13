@@ -6,10 +6,18 @@ CREATE TABLE users (
     username VARCHAR(50) UNIQUE NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
     password_hash TEXT NOT NULL,
+
     first_name VARCHAR(50),
     last_name VARCHAR(50),
+
+    phone VARCHAR(20),
+    gender VARCHAR(20),
+    location VARCHAR(100),
+
     dob DATE,
-    resume TEXT
+    resume TEXT,
+
+    joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- =========================================

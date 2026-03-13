@@ -2,14 +2,14 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "../auth_pages/components/Footer";
+import { useAuth } from "../../hooks/useAuth";
+import { searchUsers } from "../../services/userService";
 
 function Home() {
-const user = {
-   id: "123",
-   username: "achu"
-}
+  const { user } = useAuth();
   const [stories, setStories] = useState([]);
   const navigate = useNavigate();
+  
 
   useEffect(() => {
 
@@ -129,7 +129,7 @@ const user = {
 
         <h1 className="text-5xl font-bold mb-10">
           <span className="bg-red-600 px-6 py-2 rounded-lg">
-            YOUR NAME
+          {user?.username || "User"}
           </span>
         </h1>
 
@@ -166,7 +166,7 @@ const user = {
                   {items.map((item, index) => (
                     <div
                       key={index}
-                      onClick={() => navigate(`/story/${user.id}/${item.id}`)}
+                      onClick={() =>navigate(`/story/${user.user_id}/${item.id}`)}
                       className="relative rounded-lg overflow-hidden cursor-pointer transform transition duration-300 hover:-translate-y-2 hover:shadow-2xl hover:ring-2 hover:ring-red-600 group"
                     >
 

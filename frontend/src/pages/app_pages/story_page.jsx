@@ -1,30 +1,20 @@
 import { useState, useEffect } from "react";
 import Navbar from "./components/Navbar";
 import Footer from "../auth_pages/components/Footer";
+import { getCloseFriends, addCloseFriend, removeCloseFriend } 
+from "../../services/friendService.js";
+
+import { searchUsers } from "../../services/userService";
 
 function StoryPage() {
 
   const DEFAULT_PHOTO =
     "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=800&q=80";
 
+    const avatar = (name) =>
+      `https://ui-avatars.com/api/?name=${name}&background=0b0b0d&color=fff`;
   /* simulated database */
-  const userDatabase = {
-    zia: {
-      username: "zia",
-      name: "Zia Khan",
-      descriptor: "Spark",
-      highlight: "Best meme partner",
-      photo: DEFAULT_PHOTO
-    },
-    alex: {
-      username: "alex",
-      name: "Alex Rivera",
-      descriptor: "Chaos",
-      highlight: "Adventure planner",
-      photo: DEFAULT_PHOTO
-    }
-  };
-
+ 
   const [friends, setFriends] = useState([]);
 
   const [openModal, setOpenModal] = useState(false);
@@ -57,69 +47,129 @@ function StoryPage() {
     return () => window.removeEventListener("click", closeMenu);
   }, []);
 
+  useEffect(() => {
+
+    const loadFriends = async () => {
+  
+      try {
+  
+        const data = await getCloseFriends();
+  
+        const formatted = data.map((u) => ({
+          friend_id: u.user_id,
+          username: u.username,
+          name: `${u.first_name || ""} ${u.last_name || ""}`.trim(),
+          descriptor: "",
+          highlight: "",
+          photo: DEFAULT_PHOTO
+        }));
+  
+        setFriends(formatted);
+  
+      } catch (err) {
+  
+        console.error(err);
+  
+      }
+  
+    };
+  
+    loadFriends();
+  
+  }, []);
+
   /* username auto check */
-  const handleUsernameChange = (value) => {
+  const handleUsernameChange = async (value) => {
 
     setForm({ ...form, username: value });
     setConfirmUser(false);
     setFoundUser(null);
-
+  
     if (!value) return;
-
-    setLoading(true);
-
-    setTimeout(() => {
-
-      const result = userDatabase[value.toLowerCase()];
-
+  
+    try {
+  
+      setLoading(true);
+  
+      const users = await searchUsers(value);
+  
       setLoading(false);
-
-      if (result) {
-        setFoundUser(result);
+  
+      if (users.length > 0) {
+  
+        const u = users[0];
+  
+        setFoundUser({
+          user_id: u.user_id,
+          username: u.username,
+          name: `${u.first_name || ""} ${u.last_name || ""}`.trim(),
+          descriptor: "",
+          highlight: "",
+          photo: DEFAULT_PHOTO
+        });
+  
         setConfirmUser(true);
+  
       }
-
-    }, 1000);
+  
+    } catch (err) {
+  
+      console.error(err);
+      setLoading(false);
+  
+    }
+  
   };
-
   const confirmSelection = () => {
 
     setForm({
       username: foundUser.username,
       name: foundUser.name,
-      descriptor: foundUser.descriptor,
-      highlight: foundUser.highlight,
-      photo: foundUser.photo
+      descriptor: "",
+      highlight: "",
+      photo: DEFAULT_PHOTO
     });
-
+  
     setConfirmUser(false);
+  
   };
-
-  const handleSubmit = (e) => {
-
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const newFriend = {
-      ...form,
-      photo: form.photo || DEFAULT_PHOTO
-    };
-
-    if (editingIndex !== null) {
-      const updated = [...friends];
-      updated[editingIndex] = newFriend;
-      setFriends(updated);
-    } else {
-      setFriends([...friends, newFriend]);
+    // 1. Check if the user is already in the friends array
+    const isDuplicate = friends.some((f) => f.username === foundUser.username);
+    
+    if (isDuplicate) {
+      alert("This user is already in your close friends list!");
+      return; // Stop the function here so it doesn't add them
     }
 
-    setOpenModal(false);
+    try {
+      const saved = await addCloseFriend(foundUser.user_id);
+  
+      const newFriend = {
+        friend_id: saved.friend_id || foundUser.user_id, // Fallback just in case
+        username: foundUser.username,
+        name: form.name,
+        descriptor: form.descriptor,
+        highlight: form.highlight,
+        photo: form.photo || DEFAULT_PHOTO
+      };
+  
+      setFriends([...friends, newFriend]);
+      setOpenModal(false);
+  
+    } catch (err) {
+      console.error(err);
+    }
   };
-
-  const deleteFriend = (index) => {
+  const deleteFriend = async (index) => {
+    const friend = friends[index];
+    await removeCloseFriend(friend.friend_id); 
+    
     const updated = friends.filter((_, i) => i !== index);
     setFriends(updated);
   };
-
   const editFriend = (index) => {
     setEditingIndex(index);
     setForm(friends[index]);
@@ -225,11 +275,12 @@ function StoryPage() {
                   transition hover:-translate-y-1 hover:shadow-2xl"
                 >
 
-                  <img
-                    src={friend.photo}
+                <img src={ friend.photo ||
+    `https://ui-avatars.com/api/?name=${friend.name}&background=0b0b0d&color=fff`
+                        }
                     alt={friend.name}
-                    className="w-full h-52 object-cover"
-                  />
+                         className="w-full h-52 object-cover"
+                                   />
 
                   <div className="absolute inset-0 bg-black/40"></div>
 
@@ -329,10 +380,10 @@ function StoryPage() {
 
                 <div className="flex items-center gap-3">
 
-                  <img
-                    src={foundUser.photo}
-                    className="w-10 h-10 rounded-full"
-                  />
+                <img src={
+  `https://ui-avatars.com/api/?name=${foundUser.name}&background=0b0b0d&color=fff`}
+                         className="w-10 h-10 rounded-full"
+                    />
 
                   <div>
                     <p className="font-semibold">

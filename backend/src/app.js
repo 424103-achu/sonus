@@ -1,6 +1,8 @@
 import express from "express";
 import cors from "cors";
-
+import authRoutes from "./routes/authRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
+import friendRoutes from "./routes/friendRoutes.js"
 const app = express();
 
 app.use(cors({
@@ -11,21 +13,8 @@ app.use(cors({
 
 app.use(express.json());
 
-// app.use("/api/auth", authRoutes);
-
-app.get("/", (req, res) => {
-  res.send('<p>successfully initialised backend</p>');
-});
-app.get("/test", (req, res) => {
-  res.json({ message: "Backend working" });
-});
-app.get("/signup", (req, res) => {
-  db.query("SELECT 3+5 AS result", (err, results) => {
-    if (err) {
-      return res.status(500).json(err);
-    }
-    res.json(results);
-  });
-});
+app.use("/api/auth", authRoutes);
+app.use("/api/user", userRoutes);
+app.use("/api/friends", friendRoutes);
 
 export default app;
