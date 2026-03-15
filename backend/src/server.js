@@ -3,7 +3,6 @@ import app from "./app.js";
 import express from "express";
 import pool from "./utils/db.js";
 dotenv.config();
-app.use(express.json());
 const PORT = process.env.PORT || 5000;
 app.get("/test", (req, res) => {
   res.json({ message: "Backend working" });
