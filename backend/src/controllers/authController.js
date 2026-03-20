@@ -18,7 +18,16 @@ export const register = async (req, res) => {
       { expiresIn: "7d" }
     );
 
-    res.status(201).json({ user, token });
+    res.status(201).json({
+      user: {
+        user_id: user.user_id,
+        username: user.username,
+        email: user.email,
+        first_name: user.first_name,
+        last_name: user.last_name
+      },
+      token
+    });
 
   } catch (err) {
 
@@ -57,7 +66,9 @@ export const login = async (req, res) => {
       user: {
         user_id: user.user_id,
         username: user.username,
-        email: user.email
+        email: user.email,
+        first_name: user.first_name,
+        last_name: user.last_name
       },
       token
     });
@@ -68,4 +79,18 @@ export const login = async (req, res) => {
 
   }
 
+};
+
+/**
+ * LOGOUT
+ */
+export const logout = async (req, res) => {
+  try {
+    // Token is already verified by middleware
+    // In a stateless JWT system, logout is handled client-side
+    // by removing the token from localStorage
+    res.json({ message: "Logged out successfully" });
+  } catch (err) {
+    res.status(500).json({ message: "Logout failed" });
+  }
 };

@@ -1,10 +1,21 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import Button from "../../components/button";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import { useAuth } from "../../hooks/useAuth";
 import "../../index.css";
 
 function Home_Auth() {
+  const navigate = useNavigate();
+  const { user, loading } = useAuth();
+
+  // Redirect to profile if already logged in
+  useEffect(() => {
+    if (user && !loading) {
+      navigate("/home", { replace: true });
+    }
+  }, [user, loading, navigate]);
   return (
     <div className="w-full min-h-full bg-[#0b0b0d] text-white relative overflow-x-hidden">
       {/* ================= NAVBAR ================= */}

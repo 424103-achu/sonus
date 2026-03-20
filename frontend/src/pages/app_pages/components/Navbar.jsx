@@ -1,17 +1,45 @@
-import { HomeIcon } from "lucide-react";
+import { HomeIcon, LogOut } from "lucide-react";
 import { User2, Search } from "lucide-react";
 import IconLink from "./iconlink";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { searchUsers } from "../../../services/userService";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../../hooks/useAuth";
 
 function Navbar() {
 
   const [expanded, setExpanded] = useState(false);
   const [search, setSearch] = useState("");
   const [results, setResults] = useState([]);
+  const { logout } = useAuth();
 
   const navigate = useNavigate();
+  const leaveTimerRef = useRef(null);
+
+  const handleUserClick = (userId) => {
+    setSearch("");
+    setResults([]);
+    setExpanded(false);
+    navigate(`/view-home/${userId}`);
+  };
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/");
+  };
+
+  const handleMouseEnter = () => {
+    clearTimeout(leaveTimerRef.current);
+    setExpanded(true);
+  };
+
+  const handleMouseLeave = () => {
+    leaveTimerRef.current = setTimeout(() => {
+      setExpanded(false);
+      setSearch("");
+      setResults([]);
+    }, 150);
+  };
 
   useEffect(() => {
 
@@ -51,14 +79,14 @@ function Navbar() {
       </div>
 
       {/* Navigation */}
-      <nav className="flex gap-8 text-sm text-zinc-400 relative">
+      <nav className="flex gap-8 text-sm text-zinc-400 items-center relative">
 
         <IconLink to="/home" icon={HomeIcon} label="Home" />
 
         {/* SEARCH */}
         <div
-          onMouseEnter={() => setExpanded(true)}
-          onMouseLeave={() => setExpanded(false)}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
           className={`
             flex flex-row-reverse items-center
             rounded-full
@@ -92,7 +120,7 @@ function Navbar() {
           {/* SEARCH RESULTS */}
           {expanded && search && (
 
-            <div className="absolute top-12 right-0 w-64 bg-[#0b0b0d] border border-white/10 rounded-lg shadow-xl">
+            <div className="absolute top-12 right-0 w-64 bg-[#0b0b0d] border border-white/10 rounded-lg shadow-xl" onMouseEnter={handleMouseEnter}>
 
               {results.length === 0 ? (
 
@@ -113,7 +141,7 @@ function Navbar() {
 
                     <div
                       key={u.user_id}
-                      onClick={() => navigate(`/profile/${u.user_id}`)}
+                      onClick={() => handleUserClick(u.user_id)}
                       className="flex items-center gap-3 p-3 hover:bg-white/5 cursor-pointer"
                     >
 
@@ -149,6 +177,28 @@ function Navbar() {
         </div>
 
         <IconLink to="/profile" icon={User2} label="Profile" />
+
+        {/* Logout Button */}
+        <button
+          onClick={handleLogout}
+          className="relative flex items-center justify-center group"
+          title="Logout"
+        >
+          <LogOut className="w-6 h-6 text-zinc-400 group-hover:text-red-500 transition" />
+          <span
+            className="
+              absolute left-1/2 -translate-x-1/2 top-10
+              px-2 py-1 text-xs rounded-md
+              bg-black text-white
+              opacity-0 translate-y-2
+              group-hover:opacity-100 group-hover:translate-y-0
+              transition-all duration-200
+              whitespace-nowrap
+            "
+          >
+            Logout
+          </span>
+        </button>
 
       </nav>
 

@@ -1,14 +1,16 @@
 import { Link } from "react-router-dom";
 
 
-function IconLink({ to, icon: Icon, label }) {
+function IconLink({ to, icon, label }) {
+  const IconComponent = icon;
+
   return (
     <Link
       to={to}
       className="relative flex items-center justify-center group"
     >
       {/* Icon */}
-      <Icon className="w-6 h-6 text-zinc-400 group-hover:text-white transition" />
+      <IconComponent className="w-6 h-6 text-zinc-400 group-hover:text-white transition" />
 
       {/* Hover Label */}
       <span

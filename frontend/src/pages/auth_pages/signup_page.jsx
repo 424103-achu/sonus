@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../../index.css";
 import Button from "../../components/button";
@@ -24,8 +24,15 @@ function Signup() {
     password: "",
   });
 
-  const { register } = useAuth();
+  const { register, user, loading } = useAuth();
   const navigate = useNavigate();
+
+  // Redirect to profile if already logged in
+  useEffect(() => {
+    if (user && !loading) {
+      navigate("/profile", { replace: true });
+    }
+  }, [user, loading, navigate]);
 
   const handleChange = (e) => {
     setError("");

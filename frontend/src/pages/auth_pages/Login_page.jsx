@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import Navbar from "./components/Navbar";
@@ -14,8 +14,15 @@ function Login() {
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  const { login } = useAuth();
+  const { login, user, loading } = useAuth();
   const navigate = useNavigate();
+
+  // Redirect to profile if already logged in
+  useEffect(() => {
+    if (user && !loading) {
+      navigate("/home", { replace: true });
+    }
+  }, [user, loading, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,7 +35,7 @@ function Login() {
     try {
       setError("");
       await login(identifier, password);
-      navigate("/profile");
+      // Don't manually navigate - let useAuth redirect
     } catch (err) {
       const msg =
         err.response?.data?.message || "Login failed";
@@ -103,7 +110,9 @@ function Login() {
 
             {/* Submit */}
             <div className="flex justify-center">
-              <Button type="submit">Login</Button>
+              <Button type="submit" disabled={loading}>
+                {loading ? "Logging in..." : "Login"}
+              </Button>
             </div>
 
             {/* Error */}

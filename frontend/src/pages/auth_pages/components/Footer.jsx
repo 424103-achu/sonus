@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-function Footer({ links = [] }) {
+function Footer() {
   return (
     <footer className="w-full bg-[#0f0f12] border-t border-white/5 text-zinc-400 ">
       <div className="max-w-full mx-auto px-6 py-10 flex flex-col  md:flex-row justify-center items-center gap-6">

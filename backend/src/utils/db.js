@@ -2,7 +2,11 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import pkg from "pg";
-const { Pool } = pkg;
+const { Pool, types } = pkg;
+
+// Return DATE columns as plain "YYYY-MM-DD" strings — prevents JS Date
+// timezone conversion from shifting the date by one day.
+types.setTypeParser(1082, (val) => val);
 
 const pool = new Pool({
   user: process.env.DB_USER,

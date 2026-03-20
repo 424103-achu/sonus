@@ -19,7 +19,7 @@ FIND USER BY ID (PROFILE PAGE)
 */
 export const findUserForLogin = async (value) => {
   const { rows } = await pool.query(
-    `SELECT user_id,username, email, password_hash
+    `SELECT user_id, username, email, password_hash, first_name, last_name
      FROM users
      WHERE username = $1 OR email = $1`,
     [value]
@@ -29,24 +29,61 @@ export const findUserForLogin = async (value) => {
 };
 
 export const findUserById = async (userId) => {
-
+  
+  // Fetch basic user info (exclude resume for speed)
   const { rows } = await pool.query(
     `SELECT
-  user_id,
-  username,
-  email,
-  first_name,
-  last_name,
-  phone,
-  gender,
-  location,
-  dob,
-  resume,
-  joined_at
-FROM users
-WHERE user_id = $1`,
+      u.user_id,
+      u.username,
+      u.email,
+      u.first_name,
+      u.last_name,
+      u.phone,
+      u.gender,
+      u.location,
+      u.dob,
+      u.joined_at,
+      (
+        SELECT COUNT(*)::int
+        FROM friendships f
+        WHERE f.user_id = u.user_id
+          AND f.status = 'accepted'
+      ) AS friends_count,
+      (
+        SELECT COUNT(*)::int
+        FROM friendships f
+        WHERE f.user_id = u.user_id
+          AND f.status = 'accepted'
+          AND f.favorite = true
+      ) AS close_friends_count
+    FROM users u
+    WHERE u.user_id = $1`,
     [userId]
   );
+  
+  return rows[0];
+};
+
+// Separate query for resume (only fetch when needed)
+export const getResumeById = async (userId) => {
+  
+  const { rows } = await pool.query(
+    `SELECT resume FROM users WHERE user_id = $1`,
+    [userId]
+  );
+  
+  return rows[0]?.resume || null;
+};
+
+export const updateUserResume = async (userId, resumeUrl) => {
+  const { rows } = await pool.query(
+    `UPDATE users
+     SET resume = $1
+     WHERE user_id = $2
+     RETURNING user_id, resume`,
+    [resumeUrl, userId]
+  );
+
   return rows[0];
 };
 
@@ -78,7 +115,20 @@ export const updateUserProfile = async (
        gender,
        location,
        dob,
-       resume`,
+       resume,
+       (
+         SELECT COUNT(*)::int
+         FROM friendships f
+         WHERE f.user_id = users.user_id
+           AND f.status = 'accepted'
+       ) AS friends_count,
+       (
+         SELECT COUNT(*)::int
+         FROM friendships f
+         WHERE f.user_id = users.user_id
+           AND f.status = 'accepted'
+           AND f.favorite = true
+       ) AS close_friends_count`,
        [
         first_name,
         last_name,
@@ -111,4 +161,35 @@ export const searchUsersByUsername = async (query) => {
 
   return rows;
 
+};
+
+export const isCloseFriendOfUser = async (targetUserId, viewerUserId) => {
+  const { rows } = await pool.query(
+    `SELECT 1
+     FROM friendships
+     WHERE user_id = $1
+       AND friend_id = $2
+       AND favorite = true
+       AND status = 'accepted'
+     LIMIT 1`,
+    [targetUserId, viewerUserId]
+  );
+
+  return rows.length > 0;
+};
+
+export const getVisibleCardsForViewer = (isOwner, isCloseFriend) => {
+  if (isOwner || isCloseFriend) {
+    return [
+      "school",
+      "graduation",
+      "creative-works",
+      "friends",
+      "close-friends",
+      "comfort-zone",
+      "resume",
+    ];
+  }
+
+  return ["school", "graduation", "creative-works", "resume"];
 };

@@ -1,34 +1,64 @@
-import { createContext, useState, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import * as authService from "../services/authService";
 import * as userService from "../services/userService";
-
-
-export const AuthContext = createContext();
+import { AuthContext } from "./AuthContext";
 
 export const AuthProvider = ({ children }) => {
 
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);   // ← THIS MUST EXIST
+  const [loading, setLoading] = useState(() => Boolean(localStorage.getItem("token")));
+
+  const logout = useCallback(() => {
+
+    localStorage.removeItem("token");
+    setUser(null);
+
+  }, []);
+
+  const refreshUser = useCallback(async () => {
+
+    try {
+
+      const data = await userService.getCurrentUser();
+      setUser(data);
+
+    } catch {
+
+      logout();
+
+    }
+
+  }, [logout]);
 
   useEffect(() => {
-
     const token = localStorage.getItem("token");
 
     if (!token) {
-      setLoading(false);
       return;
     }
 
+    let isMounted = true;
+
     userService.getCurrentUser()
       .then((data) => {
-        setUser(data);
+        if (isMounted) {
+          setUser(data);
+        }
       })
       .catch(() => {
-        localStorage.removeItem("token");
+        if (isMounted) {
+          localStorage.removeItem("token");
+        }
       })
       .finally(() => {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       });
+
+    return () => {
+      isMounted = false;
+    };
 
   }, []);
 
@@ -51,28 +81,6 @@ export const AuthProvider = ({ children }) => {
     setUser(data.user);
 
     return data;
-
-  };
-
-  const logout = () => {
-
-    localStorage.removeItem("token");
-    setUser(null);
-
-  };
-
-  const refreshUser = async () => {
-
-    try {
-
-      const data = await userService.getCurrentUser();
-      setUser(data);
-
-    } catch {
-
-      logout();
-
-    }
 
   };
 

@@ -1,9 +1,10 @@
-import React from 'react'
 import { motion } from "framer-motion";
 
 function Button({ children, onClick,onSubmit,type }) {
+  const MotionButton = motion.button;
+
   return (
-    <motion.button 
+    <MotionButton
       type={type}
       onClick={onClick}
       onSubmit={onSubmit}
@@ -15,7 +16,7 @@ function Button({ children, onClick,onSubmit,type }) {
       transition={{ duration: 0.1 }}
     >
       {children}
-    </motion.button>
+    </MotionButton>
   )
 }
 

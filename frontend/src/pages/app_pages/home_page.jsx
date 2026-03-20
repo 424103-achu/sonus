@@ -1,102 +1,13 @@
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "../auth_pages/components/Footer";
 import { useAuth } from "../../hooks/useAuth";
-import { searchUsers } from "../../services/userService";
+import { storiesData } from "../../data/stories";
 
 function Home() {
   const { user } = useAuth();
-  const [stories, setStories] = useState([]);
   const navigate = useNavigate();
-  
-
-  useEffect(() => {
-
-    const mockDB = [
-
-      {
-        id: "school",
-        title: "School",
-        category: "education",
-        summary: "A place where I learnt how to be kind",
-        detail: "Favorite memory: Best Outgoing Boy.",
-        image:
-          "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=800&q=80",
-      },
-
-      {
-        id: "graduation",
-        title: "Graduation",
-        category: "education",
-        summary: "A place where I explored all of my interests",
-        detail: "Favourite memory - not yet...",
-        image:
-          "https://images.unsplash.com/photo-1462536943532-57a629f6cc60?auto=format&fit=crop&w=800&q=80",
-      },
-
-      {
-        id: "friends",
-        title: "Friends",
-        category: "social",
-        summary: "Many memories with different people",
-        detail: "A shared book with many stories...",
-        image:
-          "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=800&q=80",
-      },
-
-      {
-        id: "close-friends",
-        title: "Close Friends",
-        category: "social",
-        summary: "My people who know every plot twist in my life",
-        detail: "Unfiltered...",
-        image:
-          "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=800&q=80",
-      },
-
-      {
-        id: "family",
-        title: "Family",
-        category: "social",
-        summary: "After all family first...",
-        detail: "Lovely family...",
-        image:
-          "https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=800&q=80",
-      },
-
-      {
-        id: "hobbies",
-        title: "Hobbies",
-        summary: "Jack of all trades Master of none",
-        detail: "Latest obsession...",
-        image:
-          "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=800&q=80",
-      },
-
-      {
-        id: "comfort-zone",
-        title: "Comfort Zone",
-        summary: "Ambient playlists and favourite series",
-        detail: "Love repeating things I enjoy...",
-        image:
-          "https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?auto=format&fit=crop&w=800&q=80",
-      },
-
-      {
-        id: "creative-works",
-        title: "Creative Works",
-        summary: "Short films and interactive timelines",
-        detail: "Mixing live-action interviews with illustration",
-        image:
-          "https://images.unsplash.com/photo-1484704849700-f032a568e944?auto=format&fit=crop&w=800&q=80",
-      },
-
-    ];
-
-    setStories(mockDB);
-
-  }, []);
+  const stories = storiesData;
 
   const sections = [
     { key: "education", label: "Education", grid: "md:grid-cols-2" },
@@ -123,13 +34,9 @@ function Home() {
 
       <header className="text-center pt-32 pb-24 px-4">
 
-        <p className="uppercase tracking-[0.3em] text-xs text-gray-400 mb-8">
-          Personal Showcase
-        </p>
-
         <h1 className="text-5xl font-bold mb-10">
           <span className="bg-red-600 px-6 py-2 rounded-lg">
-          {user?.username || "User"}
+          {user?.first_name || user?.username || "User"}
           </span>
         </h1>
 
@@ -166,7 +73,7 @@ function Home() {
                   {items.map((item, index) => (
                     <div
                       key={index}
-                      onClick={() =>navigate(`/story/${user.user_id}/${item.id}`)}
+                      onClick={() => user?.user_id && navigate(`/story/${user.user_id}/${item.id}`)}
                       className="relative rounded-lg overflow-hidden cursor-pointer transform transition duration-300 hover:-translate-y-2 hover:shadow-2xl hover:ring-2 hover:ring-red-600 group"
                     >
 

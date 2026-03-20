@@ -3,13 +3,12 @@ import pool from "../utils/db.js";
 export const addCloseFriend = async (userId, friendId) => {
 
     const result = await pool.query(
-      `INSERT INTO friendships (user_id, friend_id, favorite, status)
-       VALUES ($1, $2, true, 'accepted')
-  
-       ON CONFLICT (user_id, friend_id)
-       DO UPDATE
-       SET favorite = true
-  
+      `UPDATE friendships
+       SET
+         favorite = true,
+         status = 'accepted'
+       WHERE user_id = $1
+       AND friend_id = $2
        RETURNING *`,
       [userId, friendId]
     );
@@ -40,12 +39,14 @@ export const getCloseFriends = async (userId) => {
 
   export const removeCloseFriend = async (userId, friendId) => {
 
-    await pool.query(
+    const result = await pool.query(
       `UPDATE friendships
        SET favorite = false
        WHERE user_id = $1
        AND friend_id = $2`,
       [userId, friendId]
     );
+
+    return result.rowCount;
   
   };
