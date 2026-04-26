@@ -7,6 +7,7 @@ import Profile from "../pages/app_pages/profile_page";
 import Home_Auth from "../pages/auth_pages/Home_page";
 import StoryPage from "../pages/app_pages/story_page";
 import HomeViewPage from "../pages/app_pages/home_view_page";
+import ChatPage from "../pages/app_pages/chat_page";
 import NotFoundPage from "../pages/error/NotFoundPage";
 import ServerErrorPage from "../pages/error/ServerErrorPage";
 import UnauthorizedPage from "../pages/error/UnauthorizedPage";
@@ -24,6 +25,7 @@ function AppRoutes() {
 
       {/* Main app - Protected */}
       <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+      <Route path="/chat" element={<ProtectedRoute><ChatPage /></ProtectedRoute>} />
       <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
       <Route path="/profile/:id" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
       <Route path="/view-home/:id" element={<ProtectedRoute><HomeViewPage /></ProtectedRoute>} />

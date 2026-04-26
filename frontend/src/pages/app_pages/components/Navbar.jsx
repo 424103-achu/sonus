@@ -1,4 +1,4 @@
-import { HomeIcon, LogOut } from "lucide-react";
+import { HomeIcon, LogOut, MessageCircle } from "lucide-react";
 import { User2, Search } from "lucide-react";
 import IconLink from "./iconlink";
 import { useState, useEffect, useRef } from "react";
@@ -82,6 +82,7 @@ function Navbar() {
       <nav className="flex gap-8 text-sm text-zinc-400 items-center relative">
 
         <IconLink to="/home" icon={HomeIcon} label="Home" />
+        <IconLink to="/chat" icon={MessageCircle} label="Chat" />
 
         {/* SEARCH */}
         <div

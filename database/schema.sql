@@ -120,6 +120,56 @@ CREATE TABLE friendships (
 );
 
 -- =========================================
+-- DIRECT CHATS (ONE-TO-ONE)
+-- =========================================
+CREATE TABLE direct_chats (
+    chat_id SERIAL PRIMARY KEY,
+    user_low_id INT NOT NULL,
+    user_high_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_direct_chat_user_low
+        FOREIGN KEY (user_low_id)
+        REFERENCES users(user_id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_direct_chat_user_high
+        FOREIGN KEY (user_high_id)
+        REFERENCES users(user_id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT direct_chat_distinct_users
+        CHECK (user_low_id <> user_high_id),
+
+    CONSTRAINT direct_chat_ordered_pair
+        CHECK (user_low_id < user_high_id),
+
+    CONSTRAINT direct_chat_unique_pair
+        UNIQUE (user_low_id, user_high_id)
+);
+
+-- =========================================
+-- DIRECT CHAT MESSAGES
+-- =========================================
+CREATE TABLE direct_chat_messages (
+    message_id SERIAL PRIMARY KEY,
+    chat_id INT NOT NULL,
+    sender_id INT NOT NULL,
+    message TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_direct_chat_message_chat
+        FOREIGN KEY (chat_id)
+        REFERENCES direct_chats(chat_id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_direct_chat_message_sender
+        FOREIGN KEY (sender_id)
+        REFERENCES users(user_id)
+        ON DELETE CASCADE
+);
+
+-- =========================================
 -- EDUCATION
 -- =========================================
 CREATE TABLE education (

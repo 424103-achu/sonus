@@ -1,7 +1,8 @@
 import {
     addCloseFriend,
     getCloseFriends,
-    removeCloseFriend
+    removeCloseFriend,
+    deleteFriendship
   } from "../models/friendModel.js";
   
   export const addClose = async (req, res) => {
@@ -113,3 +114,41 @@ import {
     }
   
   };
+
+export const deleteFriend = async (req, res) => {
+
+  try {
+
+    const friendId = Number(req.params.friendId);
+    const userId = Number(req.user.user_id);
+
+    if (isNaN(friendId) || isNaN(userId)) {
+      return res.status(400).json({ message: "Invalid ID format" });
+    }
+
+    if (userId === friendId) {
+      return res.status(400).json({ message: "Cannot delete yourself as a friend" });
+    }
+
+    // First, remove from close friends if exists
+    await removeCloseFriend(userId, friendId);
+
+    // Then delete the friendship
+    const affectedRows = await deleteFriendship(userId, friendId);
+
+    if (!affectedRows) {
+      return res.status(404).json({
+        message: "Friendship not found",
+      });
+    }
+
+    res.json({ message: "Friend deleted successfully" });
+
+  } catch (err) {
+
+    console.error("Error deleting friend:", err);
+    res.status(500).json({ message: "Failed to delete friend", error: err.message });
+
+  }
+
+};

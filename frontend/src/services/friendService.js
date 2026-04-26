@@ -36,3 +36,9 @@ export const removeCloseFriend = async (friendId) => {
   await api.delete(`/friends/close/${friendId}`);
 
 };
+
+export const deleteFriend = async (friendId) => {
+
+  await api.delete(`/friends/${friendId}`);
+
+};

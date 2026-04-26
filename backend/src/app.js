@@ -5,10 +5,16 @@ import logoutRoutes from "./routes/logoutRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import friendRoutes from "./routes/friendRoutes.js"
 import storyRoutes from "./routes/storyRoutes.js";
+import chatRoutes from "./routes/chatRoutes.js";
 const app = express();
 
+const allowedOrigins = (process.env.FRONTEND_URL || "http://localhost:5173")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: allowedOrigins,
     methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));
@@ -20,6 +26,7 @@ app.use("/api/auth", logoutRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/friends", friendRoutes);
 app.use("/api/stories", storyRoutes);
+app.use("/api/chats", chatRoutes);
 
 app.use((err, req, res, next) => {
   if (err?.message === "Only PDF files are allowed") {

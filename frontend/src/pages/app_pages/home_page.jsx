@@ -25,10 +25,10 @@ function Home() {
   return (
     <div className="relative w-full min-h-screen flex flex-col text-white overflow-hidden">
 
-      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-black via-[#0b0b0d] to-black"></div>
+      <div className="absolute inset-0 -z-10 bg-linear-to-b from-black via-[#0b0b0d] to-black"></div>
 
-      <div className="absolute -top-40 -left-40 w-[500px] h-[500px] bg-red-600/10 blur-[160px] rounded-full"></div>
-      <div className="absolute top-[40%] -right-40 w-[500px] h-[500px] bg-red-500/10 blur-[160px] rounded-full"></div>
+      <div className="absolute -top-40 -left-40 w-125 h-125 bg-red-600/10 blur-[160px] rounded-full"></div>
+      <div className="absolute top-[40%] -right-40 w-125 h-125 bg-red-500/10 blur-[160px] rounded-full"></div>
 
       <Navbar />
 

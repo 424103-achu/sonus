@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import * as authService from "../services/authService";
 import * as userService from "../services/userService";
 import { AuthContext } from "./AuthContext";
+import { closeRealtimeSocket } from "../realtime/socket";
 
 export const AuthProvider = ({ children }) => {
 
@@ -12,6 +13,7 @@ export const AuthProvider = ({ children }) => {
 
     localStorage.removeItem("token");
     setUser(null);
+    closeRealtimeSocket();
 
   }, []);
 

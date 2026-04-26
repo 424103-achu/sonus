@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "../auth_pages/components/Footer";
 import ErrorModal from "../../components/ErrorModal";
-import { getCloseFriends, addCloseFriend, removeCloseFriend } from "../../services/friendService.js";
+import { getCloseFriends, addCloseFriend, removeCloseFriend, deleteFriend } from "../../services/friendService.js";
 import {
   getStoryItems,
   getStoryItemsForUser,
@@ -542,7 +542,8 @@ function StoryPage() {
         const friend = friends[index];
 
         if (isCloseFriendsStory) {
-          await removeCloseFriend(friend.friend_id);
+          // Delete close friend: first remove from close, then delete friendship
+          await deleteFriend(friend.friend_id);
         } else {
           await removeStoryItem("friends", friend.friend_id);
         }
@@ -967,7 +968,8 @@ function StoryPage() {
   };
 
   return (
-    <div className="relative min-h-screen flex flex-col text-white bg-black overflow-hidden">
+    <div className="relative min-h-screen flex flex-col text-white overflow-hidden">
+      <div className="absolute inset-0 -z-10 bg-linear-to-b from-black via-[#0b0b0d] to-black"></div>
       <div className="absolute -top-40 -left-40 w-125 h-125 bg-red-600/10 blur-[160px] rounded-full"></div>
       <div className="absolute top-[40%] -right-40 w-125 h-125 bg-red-500/10 blur-[160px] rounded-full"></div>
 

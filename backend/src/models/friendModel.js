@@ -50,3 +50,16 @@ export const getCloseFriends = async (userId) => {
     return result.rowCount;
   
   };
+
+  export const deleteFriendship = async (userId, friendId) => {
+
+    const result = await pool.query(
+      `DELETE FROM friendships
+       WHERE user_id = $1
+       AND friend_id = $2`,
+      [userId, friendId]
+    );
+
+    return result.rowCount;
+  
+  };

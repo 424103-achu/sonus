@@ -8,7 +8,6 @@ import "../../index.css";
 import { useAuth } from "../../hooks/useAuth";
 
 function Login() {
-
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -37,17 +36,15 @@ function Login() {
       await login(identifier, password);
       // Don't manually navigate - let useAuth redirect
     } catch (err) {
-      const msg =
-        err.response?.data?.message || "Login failed";
-    
+      const msg = err.response?.data?.message || "Login failed";
+
       setError(msg);
     }
   };
 
   return (
-    <div className="w-full min-h-full bg-[#0b0b0d] text-white relative overflow-hidden">
-
-      {/* Navbar */}
+    <div className="w-full min-h-full bg-[#0b0b0d] text-white relative overflow-x-hidden">
+      {/* ================= NAVBAR ================= */}
       <Navbar
         links={[
           { name: "Home", path: "/" },
@@ -55,16 +52,17 @@ function Login() {
         ]}
       />
 
+      {/* ================= GLOW BACKGROUND ================= */}
+      <div className="absolute -top-[15%] -left-[15%] w-[50%] h-[50%] bg-red-600/20 blur-[20vw] pointer-events-none" />
+      <div className="absolute bottom-0 right-0 w-[40%] h-[40%] bg-red-700/10 blur-[18vw] pointer-events-none" />
+
       {/* Layout */}
       <div className="w-full relative z-10 flex flex-col min-[820px]:flex-row justify-center items-center min-h-screen pt-20">
-
         <div className="w-full min-[820px]:w-1/2 flex justify-center items-center px-6 py-12">
-
           <form
             onSubmit={handleSubmit}
             className="w-full max-w-md p-8 rounded-2xl bg-[#141417]/80 backdrop-blur border border-white/5 shadow-2xl"
           >
-
             <h1 className="text-2xl text-center font-semibold mb-8">
               Log into your account
             </h1>
@@ -82,7 +80,6 @@ function Login() {
 
             {/* Password */}
             <div className="relative mb-6">
-
               <input
                 type={showPassword ? "text" : "password"}
                 value={password}
@@ -96,7 +93,7 @@ function Login() {
 
               <button
                 type="button"
-                onClick={() => setShowPassword(prev => !prev)}
+                onClick={() => setShowPassword((prev) => !prev)}
                 className="absolute inset-y-0 right-4 flex items-center text-gray-400"
               >
                 {showPassword ? (
@@ -105,7 +102,6 @@ function Login() {
                   <EyeIcon className="w-5 h-5" />
                 )}
               </button>
-
             </div>
 
             {/* Submit */}
@@ -129,14 +125,11 @@ function Login() {
                 Sign up
               </Link>
             </p>
-
           </form>
-
         </div>
       </div>
 
       <Footer />
-
     </div>
   );
 }
