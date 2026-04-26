@@ -1,223 +1,292 @@
-# Sonus - A Structured Portfolio Website
+# Sonus
 
-Sonus is a full-stack web application where users can share stories, connect with friends, manage profiles, and build a social network. The platform features authenticated user accounts, profile management, friend connections, and story sharing capabilities.
+Sonus is a full-stack social web application where users can build profiles, manage friendships, share story-based content, maintain comfort-zone lists (movies and foods), upload resumes, and chat in real time.
 
-## 📋 Table of Contents
+## Features
 
-- [Features](#features)
-- [Project Structure](#project-structure)
-- [Tech Stack](#tech-stack)
-- [Installation](#installation)
-- [Running the Project](#running-the-project)
-- [Database](#database)
-- [API Endpoints](#api-endpoints)
-- [Project Structure Details](#project-structure-details)
+- JWT-based authentication (register/login/logout)
+- Protected client routes and protected API endpoints
+- Profile management with visibility logic based on owner/close-friend access
+- Friend and close-friend management
+- Story modules: school, graduation, creative works, friends, close friends
+- Comfort-zone modules: movies and foods
+- Resume upload, preview, stream, and deletion using Cloudinary
+- One-to-one chat for mutual accepted friends only
+- Real-time chat events with Socket.IO
 
-## ✨ Features
-
-- **Authentication**: User registration and login with JWT tokens and bcrypt password hashing
-- **User Profiles**: Create and manage user profiles with personal information (name, location, bio, resume, etc.)
-- **Friend System**: Connect with other users, manage friend requests and relationships
-- **Story Sharing**: Post and share stories with the community
-- **Image Upload**: Upload images using Cloudinary integration
-- **Responsive Design**: Mobile-friendly UI built with React and Tailwind CSS
-- **Protected Routes**: Secure pages that require authentication
-
-## 🏗️ Project Structure
-
-```
-sonus/
-├── backend/                    # Node.js + Express server
-│   ├── src/
-│   │   ├── app.js             # Express app setup
-│   │   ├── server.js          # Server entry point
-│   │   ├── config/            # Configuration files
-│   │   ├── controllers/       # Route handlers (auth, user, friend, story)
-│   │   ├── middleware/        # Auth middleware
-│   │   ├── models/            # Database models
-│   │   ├── routes/            # API route definitions
-│   │   ├── services/          # Business logic
-│   │   ├── utils/             # Database utilities
-│   │   └── tests/             # Test files
-│   └── package.json
-├── frontend/                   # React + Vite application
-│   ├── src/
-│   │   ├── App.jsx            # Main app component
-│   │   ├── api/               # API client setup
-│   │   ├── components/        # Reusable React components
-│   │   ├── context/           # React Context (AuthContext)
-│   │   ├── hooks/             # Custom hooks
-│   │   ├── pages/             # Page components (auth, app)
-│   │   ├── routes/            # React Router setup
-│   │   ├── services/          # API services
-│   │   
-│   └── package.json
-├── database/                   # Database schema and setup
-│   ├── schema.sql            # Main database schema
-│   ├── auto_sequentialise_safe_tables.sql
-│   ├── createindex.sql       # Database indexes
-│   └── Prevent_duplicate_friendship.sql
-└── README.md                  # This file
-```
-
-## 🛠️ Tech Stack
-
-### Backend
-- **Node.js** with **Express.js** - Web framework
-- **PostgreSQL** - Database
-- **JWT** - Authentication tokens
-- **bcrypt** - Password hashing
-- **Cloudinary** - Image hosting and management
-- **Multer** - File upload handling
-- **CORS** - Cross-origin request handling
+## Tech Stack
 
 ### Frontend
-- **React 19** - UI framework
-- **Vite** - Build tool and development server
-- **React Router** - Client-side routing
-- **Tailwind CSS** - Styling
-- **Axios** - HTTP client
-- **Framer Motion** - Animations
-- **React Icons** - Icon library
 
-### DevTools
-- **Nodemon** - Auto-restart Node.js during development
-- **ESLint** - Code linting
+- React 19
+- Vite (Rolldown Vite)
+- React Router 7
+- Axios
+- Tailwind CSS 4
+- Framer Motion
+- React Spring
+- Lucide React
+- React Icons
+- Socket.IO Client
 
-## 📦 Installation
+### Backend
 
-### Prerequisites
-- Node.js (v16 or higher)
-- PostgreSQL (v12 or higher)
-- npm or yarn
+- Node.js (ES Modules)
+- Express 5
+- PostgreSQL driver (`pg`)
+- JWT (`jsonwebtoken`)
+- `bcrypt`
+- `multer` (memory storage)
+- Cloudinary SDK
+- Socket.IO
+- `cors`
+- `dotenv`
 
-### Backend Setup
+### Database
 
-1. Navigate to the backend directory:
-   ```bash
-   cd backend
-   npm install
-   ```
+- PostgreSQL
+- SQL schema and index scripts in [database/schema.sql](database/schema.sql), [database/createindex.sql](database/createindex.sql), [database/Prevent_duplicate_friendship.sql](database/Prevent_duplicate_friendship.sql)
 
-2. Create a `.env` file in the backend directory with the following variables:
-   ```
-   DB_HOST=localhost
-   DB_USER=your_postgres_user
-   DB_PASSWORD=your_postgres_password
-   DB_NAME=sonus_db
-   DB_PORT=5432
-   JWT_SECRET=your_jwt_secret_key
-   CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
-   CLOUDINARY_API_KEY=your_cloudinary_api_key
-   CLOUDINARY_API_SECRET=your_cloudinary_api_secret
-   PORT=5000
-   ```
+## Architecture Overview
 
-3. Set up the database:
-   ```bash
-   psql -U your_postgres_user -d postgres -f ../database/schema.sql
-   psql -U your_postgres_user -d sonus_db -f ../database/createindex.sql
-   ```
+### Runtime
 
-### Frontend Setup
+- Frontend dev server: `http://localhost:5173`
+- Backend API + realtime server: `http://localhost:5000`
+- API base URL from frontend: `VITE_API_URL` (defaults to `http://localhost:5000/api`)
 
-1. Navigate to the frontend directory:
-   ```bash
-   cd frontend
-   npm install
-   ```
+### Backend layering
 
-2. Create a `.env` file in the frontend directory:
-   ```
-   VITE_API_URL=http://localhost:5000/api
-   ```
+- `routes` -> endpoint wiring
+- `middleware` -> JWT verification
+- `controllers` -> request validation and orchestration
+- `models` -> SQL data access via PostgreSQL pool
+- `utils/realtime.js` -> user socket registry and event emission helpers
 
-## 🚀 Running the Project
+### Realtime chat flow
 
-### Development Mode
+- Frontend connects with `socket.io-client` and sends `userId` in handshake query
+- Backend stores `userId -> socketId[]`
+- On send/delete message, backend emits:
+  - `chat:message`
+  - `chat:message:deleted`
+- Active chat UI updates from REST + socket events
 
-**Terminal 1 - Backend:**
+## Repository Structure
+
+```text
+sonus/
+|- backend/
+|  |- scripts/
+|  |  |- applyChatDb.mjs
+|  |  |- verifyChatDb.mjs
+|  |- src/
+|  |  |- app.js
+|  |  |- server.js
+|  |  |- config/
+|  |  |- controllers/
+|  |  |- middleware/
+|  |  |- models/
+|  |  |- routes/
+|  |  |- tests/
+|  |  |- utils/
+|  |- package.json
+|- frontend/
+|  |- src/
+|  |  |- api/
+|  |  |- components/
+|  |  |- context/
+|  |  |- hooks/
+|  |  |- pages/
+|  |  |- realtime/
+|  |  |- routes/
+|  |  |- services/
+|  |- package.json
+|- database/
+|  |- schema.sql
+|  |- createindex.sql
+|  |- Prevent_duplicate_friendship.sql
+|  |- auto_sequentialise_safe_tables.sql
+|- README.md
+```
+
+## Prerequisites
+
+- Node.js 18+
+- PostgreSQL 12+
+- npm
+
+## Environment Variables
+
+### Backend (`backend/.env`)
+
+```env
+DB_HOST=localhost
+DB_USER=your_postgres_user
+DB_PASSWORD=your_postgres_password
+DB_NAME=sonus_db
+DB_PORT=5432
+JWT_SECRET=your_jwt_secret_key
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_cloudinary_api_key
+CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+FRONTEND_URL=http://localhost:5173
+HOST=0.0.0.0
+PORT=5000
+```
+
+### Frontend (`frontend/.env`)
+
+```env
+VITE_API_URL=http://localhost:5000/api
+# Optional; if omitted, socket URL is inferred from VITE_API_URL
+VITE_SOCKET_URL=http://localhost:5000
+```
+
+## Setup
+
+### 1) Install dependencies
+
 ```bash
 cd backend
-npm run dev
-```
-The backend will run on `http://localhost:5000`
+npm install
 
-**Terminal 2 - Frontend:**
+cd ../frontend
+npm install
+```
+
+### 2) Create database and apply schema
+
 ```bash
+# from project root
+psql -U your_postgres_user -d postgres -f database/schema.sql
+psql -U your_postgres_user -d sonus_db -f database/createindex.sql
+psql -U your_postgres_user -d sonus_db -f database/Prevent_duplicate_friendship.sql
+```
+
+Optional maintenance trigger script:
+
+```bash
+psql -U your_postgres_user -d sonus_db -f database/auto_sequentialise_safe_tables.sql
+```
+
+### 3) Apply/verify chat DB objects (optional helper scripts)
+
+```bash
+cd backend
+node scripts/applyChatDb.mjs
+node scripts/verifyChatDb.mjs
+```
+
+## Run
+
+### Development
+
+```bash
+# Terminal 1
+cd backend
+npm run dev
+
+# Terminal 2
 cd frontend
 npm run dev
 ```
-The frontend will run on `http://localhost:5173` (or the next available port)
 
-### Production Build
+### Production-like local run
 
-**Backend:**
 ```bash
 cd backend
 npm start
-```
 
-**Frontend:**
-```bash
-cd frontend
+cd ../frontend
 npm run build
 npm run preview
 ```
 
-## 🗄️ Database
+## API Summary
 
-The database uses PostgreSQL with the following main tables:
+Base URL: `/api`
 
-- **users** - User accounts with profile information
-- **stories** - User-generated stories and posts
-- **friendships** - Friend connections between users
-- **movies, foods, schools, projects** - User interest/activity tracking tables
+### Auth
 
-See `database/schema.sql` for the complete schema.
+- `POST /auth/register`
+- `POST /auth/login`
+- `POST /auth/logout` (token required)
 
-## 🔌 API Endpoints
+### User
 
-### Authentication
-- `POST /api/auth/register` - Register a new user
-- `POST /api/auth/login` - Login user
-- `POST /api/auth/logout` - Logout user
-
-### Users
-- `GET /api/users/:id` - Get user profile
-- `PUT /api/users/:id` - Update user profile
-- `GET /api/users` - Get list of users
+- `GET /user/me`
+- `PUT /user/profile`
+- `POST /user/resume` (multipart, PDF only)
+- `DELETE /user/resume`
+- `GET /user/search?q=<prefix>`
+- `GET /user/:id/home-visibility`
+- `GET /user/:id/resume`
+- `GET /user/:id/resume/preview-url`
+- `GET /user/:id/resume/file`
+- `GET /user/:id`
 
 ### Friends
-- `POST /api/friends/add` - Send friend request
-- `GET /api/friends/:id` - Get user's friends
-- `DELETE /api/friends/:id` - Remove friend
+
+- `GET /friends/close`
+- `POST /friends/close`
+- `DELETE /friends/close/:friendId`
+- `DELETE /friends/:friendId`
 
 ### Stories
-- `GET /api/stories` - Get all stories
-- `POST /api/stories` - Create a new story
-- `GET /api/stories/:id` - Get story details
-- `PUT /api/stories/:id` - Update story
-- `DELETE /api/stories/:id` - Delete story
 
-## 🔒 Authentication
+- `GET /stories/friends/search`
+- `GET /stories/view/:targetUserId/:storyId`
+- `GET /stories/view/:targetUserId/comfort-zone/:itemType`
+- `GET /stories/comfort-zone/:itemType`
+- `POST /stories/comfort-zone/:itemType`
+- `PUT /stories/comfort-zone/:itemType/:itemId`
+- `DELETE /stories/comfort-zone/:itemType/:itemId`
+- `GET /stories/:storyId`
+- `POST /stories/:storyId`
+- `PUT /stories/:storyId/:itemId`
+- `DELETE /stories/:storyId/:itemId`
 
-The application uses JWT-based authentication:
+### Chats
 
-1. User provides credentials (email/username and password)
-2. Backend validates and returns a JWT token
-3. Token is stored in browser and sent with each subsequent request
-4. Protected routes require valid JWT token
+- `GET /chats`
+- `GET /chats/:friendId/messages`
+- `POST /chats/:friendId/messages`
+- `DELETE /chats/:friendId/messages/:messageId`
 
-Passwords are hashed using bcrypt before storing in the database.
+## Database Highlights
 
-## 📝 Development Notes
+Main tables:
 
-- The `ProtectedRoute` component ensures only authenticated users can access certain pages
-- The `AuthContext` manages global authentication state
-- Environment variables must be set correctly for Cloudinary and database connections
-- CORS is configured to allow requests from the frontend
+- `users`
+- `friendships`
+- `direct_chats`
+- `direct_chat_messages`
+- `movies`
+- `foods`
+- `schools`
+- `projects`
+- `favorite_movies`
+- `favorite_foods`
+- `education`
+- `user_projects`
 
-## 📄 License
+Notable constraints and indexes:
+
+- Unique friendship pair: `(user_id, friend_id)`
+- No self-friendship check on `friendships`
+- Ordered and unique direct chat pair: `(user_low_id, user_high_id)` with `user_low_id < user_high_id`
+- `idx_users_username_search`
+- `idx_direct_chat_messages_chat_created`
+- `idx_friendships_pair_status`
+
+## Notes
+
+- JWT is stateless; logout is client-side token removal plus protected endpoint call.
+- Axios request interceptor attaches `Authorization: Bearer <token>` when available.
+- Axios response interceptor clears token and redirects on `401` for protected screens.
+- CORS origins are controlled by backend `FRONTEND_URL` (comma-separated values supported).
+
+## License
 
 ISC
